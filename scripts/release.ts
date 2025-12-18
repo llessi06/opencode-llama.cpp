@@ -151,6 +151,14 @@ async function main() {
   // Step 6: Publish to npm
   console.log('\n📦 Publishing to npm...')
   let npmPublished = false
+  
+  // Check for npm token in environment or config
+  const npmToken = process.env.NPM_TOKEN
+  if (npmToken) {
+    console.log('   Using NPM_TOKEN from environment')
+    process.env.npm_config__authToken = npmToken
+  }
+  
   try {
     runCommand('npm publish', 'Publishing to npm')
     console.log(`\n✅ Successfully published opencode-lmstudio@${newVersion} to npm!`)
@@ -161,6 +169,7 @@ async function main() {
     console.error('   1. Two-factor authentication required')
     console.error('      → Create an npm token: npm token create --read-only=false')
     console.error('      → Set it: npm config set //registry.npmjs.org/:_authToken YOUR_TOKEN')
+    console.error('      → Or set env var: export NPM_TOKEN=your_token_here')
     console.error('   2. Package name already exists (version conflict)')
     console.error('   3. Not logged in (run: npm login)')
     console.error('\n   You can manually publish with: npm publish')
