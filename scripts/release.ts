@@ -150,23 +150,38 @@ async function main() {
 
   // Step 6: Publish to npm
   console.log('\n📦 Publishing to npm...')
+  let npmPublished = false
   try {
     runCommand('npm publish', 'Publishing to npm')
     console.log(`\n✅ Successfully published opencode-lmstudio@${newVersion} to npm!`)
     console.log(`   https://www.npmjs.com/package/opencode-lmstudio`)
+    npmPublished = true
   } catch (error) {
     console.error('\n⚠️  npm publish failed. Common reasons:')
-    console.error('   1. Two-factor authentication required (use npm token)')
+    console.error('   1. Two-factor authentication required')
+    console.error('      → Create an npm token: npm token create --read-only=false')
+    console.error('      → Set it: npm config set //registry.npmjs.org/:_authToken YOUR_TOKEN')
     console.error('   2. Package name already exists (version conflict)')
     console.error('   3. Not logged in (run: npm login)')
     console.error('\n   You can manually publish with: npm publish')
-    process.exit(1)
+    console.error('\n   Note: All other steps completed successfully!')
+    console.error('   - Version bumped ✓')
+    console.error('   - Git tag created ✓')
+    console.error('   - GitHub release created ✓')
+    console.error('   - Only npm publish needs manual intervention')
   }
 
-  console.log(`\n🎉 Release ${newVersion} completed successfully!`)
-  console.log(`   - Git tag: ${tagName}`)
-  console.log(`   - GitHub: https://github.com/agustif/opencode-lmstudio/releases/tag/${tagName}`)
-  console.log(`   - npm: https://www.npmjs.com/package/opencode-lmstudio`)
+  if (npmPublished) {
+    console.log(`\n🎉 Release ${newVersion} completed successfully!`)
+    console.log(`   - Git tag: ${tagName}`)
+    console.log(`   - GitHub: https://github.com/agustif/opencode-lmstudio/releases/tag/${tagName}`)
+    console.log(`   - npm: https://www.npmjs.com/package/opencode-lmstudio`)
+  } else {
+    console.log(`\n✅ Release ${newVersion} partially completed!`)
+    console.log(`   - Git tag: ${tagName} ✓`)
+    console.log(`   - GitHub: https://github.com/agustif/opencode-lmstudio/releases/tag/${tagName} ✓`)
+    console.log(`   - npm: Manual publish required (see instructions above)`)
+  }
 }
 
 main().catch((error) => {
