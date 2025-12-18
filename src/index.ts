@@ -483,7 +483,7 @@ export const LMStudioPlugin: Plugin = async ({ $, directory }) => {
       }
     },
 
-    // Validate model availability before each request
+    // Enhanced model validation with smart error handling
     "chat.params": async (input, output) => {
       const { sessionID, agent, model, provider, message } = input
       
@@ -499,50 +499,97 @@ export const LMStudioPlugin: Plugin = async ({ $, directory }) => {
         providerID: provider.info.id 
       })
       
-      // Check if model is actually loaded in LM Studio
       const baseURL = provider.options?.baseURL?.replace('/v1', '') || DEFAULT_LM_STUDIO_URL
-      const loadedModels = await getLoadedModels(baseURL)
-      const isModelLoaded = loadedModels.includes(model.id)
       
-      if (!isModelLoaded) {
-        log.warn("Model not loaded in LM Studio", { 
+      // Use retry logic for model validation
+      const validation = await retryWithBackoff(
+        async () => {
+          const loadedModels = await getLoadedModels(baseURL)
+          const isModelLoaded = loadedModels.includes(model.id)
+          
+          if (!isModelLoaded) {
+            throw new Error(`Model '${model.id}' not loaded`)
+          }
+          
+          return loadedModels
+        },
+        2, // Max 2 retries for model validation
+        500 // 500ms base delay
+      )
+      
+      if (!validation.success) {
+        // Categorize the error and provide smart suggestions
+        const errorCategory = categorizeError(validation.error, { baseURL, modelId: model.id })
+        const autoFixSuggestions = generateAutoFixSuggestions(errorCategory)
+        
+        log.warn("Model validation failed", { 
           sessionID,
           model: model.id,
-          loadedModels,
-          baseURL,
-          suggestion: "Load this model in LM Studio UI first"
+          error: validation.error,
+          errorType: errorCategory.type,
+          severity: errorCategory.severity,
+          baseURL
         })
         
-        // Provide helpful error message through options
+        // Get available models for similarity matching (last attempt)
+        let availableModels: string[] = []
+        try {
+          availableModels = await getLoadedModels(baseURL)
+        } catch (e) {
+          log.warn("Failed to get available models for suggestions", { error: e })
+        }
+        
+        // Use enhanced similarity matching
+        const similarModels = findSimilarModels(model.id, availableModels)
+        
+        // Provide comprehensive error response
         output.options.lmstudioValidation = {
           status: "error",
           model: model.id,
-          availableModels: loadedModels,
-          message: `Model '${model.id}' is not loaded in LM Studio. Please load it in the LM Studio UI first.`,
-          steps: [
+          availableModels,
+          errorCategory: errorCategory.type,
+          severity: errorCategory.severity,
+          message: errorCategory.message,
+          canRetry: errorCategory.canRetry,
+          autoFixAvailable: errorCategory.autoFixAvailable,
+          autoFixSuggestions,
+          steps: errorCategory.type === 'not_found' ? [
             "1. Open LM Studio application",
-            "2. Find the model in your models list",
-            "3. Click 'Load Model' to activate it",
-            "4. Ensure the server is running",
-            "5. Try your request again"
+            "2. Click the search icon (🔍) in the sidebar",
+            "3. Search for your desired model",
+            "4. Click 'Download' and wait for completion",
+            "5. Load the model after download",
+            "6. Ensure server is running",
+            "7. Try your request again"
+          ] : [
+            "1. Open LM Studio application",
+            "2. Verify the server is active (green indicator)",
+            "3. Check the server URL and port",
+            "4. Try loading the model manually",
+            "5. Retry your request"
           ],
-          similarModels: loadedModels.filter(m => 
-            m.toLowerCase().includes(model.id.split('-')[0].toLowerCase()) ||
-            model.id.toLowerCase().includes(m.split('-')[0].toLowerCase())
-          )
+          similarModels: similarModels.map(item => ({
+            model: item.model,
+            similarity: Math.round(item.similarity * 100),
+            reason: item.reason
+          }))
         }
       } else {
-        log.info("Model is loaded and ready", { 
+        log.info("Model validation successful", { 
           sessionID,
           model: model.id,
-          totalAvailable: loadedModels.length 
+          totalAvailable: validation.result?.length || 0,
+          retries: validation.success ? 0 : 1
         })
         
         output.options.lmstudioValidation = {
           status: "success",
           model: model.id,
-          availableModels: loadedModels,
-          message: `Model '${model.id}' is loaded and ready.`
+          availableModels: validation.result || [],
+          message: `Model '${model.id}' is loaded and ready.`,
+          performanceHint: validation.result && validation.result.length > 1 
+            ? `Note: ${validation.result.length} models loaded. Consider unloading unused models for better performance.` 
+            : undefined
         }
       }
     },
