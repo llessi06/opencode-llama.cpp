@@ -8,7 +8,7 @@ export class ModelStatusCache {
     ttl: number
   }>()
   
-  private readonly DEFAULT_TTL = 30000 // 30 seconds
+  private readonly DEFAULT_TTL = 15000 // 15 seconds (reduced for better freshness)
   private readonly MAX_CACHE_SIZE = 50 // Prevent memory leaks
   
   // Get cached model status or fetch fresh data
@@ -18,12 +18,6 @@ export class ModelStatusCache {
     
     // Return cached data if still valid
     if (cached && (now - cached.timestamp) < cached.ttl) {
-      console.debug(`[opencode-lmstudio:DEBUG] Using cached model status`, { 
-        baseURL, 
-        age: now - cached.timestamp,
-        ttl: cached.ttl,
-        modelCount: cached.models.length 
-      })
       return cached.models
     }
     
@@ -43,21 +37,20 @@ export class ModelStatusCache {
         this.cleanup()
       }
       
-      console.debug(`[opencode-lmstudio:DEBUG] Updated model status cache`, { 
-        baseURL, 
-        modelCount: models.length,
-        cacheSize: this.cache.size 
-      })
       
       return models
     } catch (error) {
-      // If we have stale cached data, return it as fallback
+      // If we have stale cached data, return it as fallback but mark as potentially invalid
       if (cached) {
         console.warn(`[opencode-lmstudio] Using stale cache data due to fetch error`, { 
           baseURL, 
           age: now - cached.timestamp,
           error: error instanceof Error ? error.message : String(error) 
         })
+        // Invalidate cache if it's very old (> 5x TTL)
+        if (now - cached.timestamp > cached.ttl * 5) {
+          this.invalidate(baseURL)
+        }
         return cached.models
       }
       throw error

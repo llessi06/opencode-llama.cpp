@@ -3,4 +3,8 @@ dist/
 *.log
 .DS_Store
 *.tsbuildinfo
+*.pid
+opencode-debug.log
+.cache/
+coverage/
 

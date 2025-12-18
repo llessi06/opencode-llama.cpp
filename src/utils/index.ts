@@ -1,5 +1,7 @@
 import type { ModelValidationError, AutoFixSuggestion, SimilarModel } from '../types'
 
+export { formatModelName, extractModelOwner } from './format-model-name'
+
 // Categorize models by type
 export function categorizeModel(modelId: string): 'chat' | 'embedding' | 'unknown' {
   const lowerId = modelId.toLowerCase()

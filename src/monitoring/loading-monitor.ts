@@ -28,7 +28,7 @@ export class ModelLoadingMonitor {
     
     // Start polling
     const interval = setInterval(() => {
-      this.checkLoadingProgress(modelId, baseURL)
+      this.checkLoadingProgress(modelId, baseURL, async () => [])
     }, this.POLL_INTERVAL)
     
     this.pollingIntervals.set(modelId, interval)
@@ -53,9 +53,9 @@ export class ModelLoadingMonitor {
   }
   
   // Check loading progress
-  private async checkLoadingProgress(modelId: string, baseURL: string, getModelsFn: () => Promise<string[]>): Promise<void> {
+  private async checkLoadingProgress(modelId: string, baseURL: string, getModelsFn?: () => Promise<string[]>): Promise<void> {
     try {
-      const models = await getModelsFn()
+      const models = await getModelsFn?.() || []
       
       const isLoaded = models.includes(modelId)
       const state = this.loadingStates.get(modelId)

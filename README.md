@@ -6,9 +6,13 @@ OpenCode plugin for enhanced LM Studio support with auto-detection and dynamic m
 
 - **Auto-detection**: Automatically detects LM Studio running on common ports (1234, 8080, 11434)
 - **Dynamic Model Discovery**: Queries LM Studio's `/v1/models` endpoint to discover available models
+- **Smart Model Formatting**: Automatically formats model names for better readability (e.g., "Qwen3 30B A3B" instead of "qwen/qwen3-30b-a3b")
+- **Organization Owner Extraction**: Extracts and sets `organizationOwner` field from model IDs
 - **Health Check Monitoring**: Verifies LM Studio is accessible before attempting operations
 - **Automatic Configuration**: Auto-creates `lmstudio` provider if detected but not configured
 - **Model Merging**: Intelligently merges discovered models with existing configuration
+- **Comprehensive Caching**: Reduces API calls with intelligent caching system
+- **Error Handling**: Smart error categorization with auto-fix suggestions
 
 ## Installation
 

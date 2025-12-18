@@ -12,7 +12,16 @@
     "src"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "build": "npm run typecheck && npm run test:run",
+    "validate": "npm run lint && npm run typecheck && npm run test:run",
+    "validate:config": "bun scripts/validate-config.ts"
   },
   "keywords": [
     "opencode",
@@ -33,7 +42,10 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.0.0"
   },
   "peerDependencies": {
     "@opencode-ai/plugin": "^1.0.0"
