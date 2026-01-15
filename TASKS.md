@@ -1,4 +1,4 @@
-# LM Studio Plugin Enhancement Tasks
+# llama.cpp Plugin Enhancement Tasks
 
 ## Epic 1: Core Model Validation System
 
@@ -6,7 +6,7 @@
 
 #### Task 1.1: Implement chat.params Hook
 - **Goal**: Add real-time model validation before each request
-- **Description**: Implement the `chat.params` hook with correct TypeScript signature to validate that selected LM Studio models are actually loaded
+- **Description**: Implement the `chat.params` hook with correct TypeScript signature to validate that selected llama.cpp models are actually loaded
 - **Files**: `src/index.ts`
 - **Changes**:
   - Add `chat.params` hook implementation
@@ -38,7 +38,7 @@
 
 #### Task 1.3: Model Status Caching
 - **Goal**: Cache model status to reduce API calls and improve responsiveness
-- **Description**: Implement in-memory caching of LM Studio model status with appropriate TTL
+- **Description**: Implement in-memory caching of llama.cpp model status with appropriate TTL
 - **Files**: `src/index.ts`
 - **Changes**:
   - Add ModelStatusCache class
@@ -53,7 +53,7 @@
 
 #### Task 1.4: Model Loading State Monitoring
 - **Goal**: Track when models are being loaded and notify users
-- **Description**: Monitor LM Studio for model loading progress and provide real-time status updates
+- **Description**: Monitor llama.cpp for model loading progress and provide real-time status updates
 - **Files**: `src/index.ts`
 - **Changes**:
   - Add periodic model status polling
@@ -71,22 +71,22 @@
 ### Phase 3: Comprehensive Event Handling
 
 #### Task 2.1: Enhanced Event Hook Implementation
-- **Goal**: Expand event monitoring to provide better LM Studio integration
+- **Goal**: Expand event monitoring to provide better llama.cpp integration
 - **Description**: Add comprehensive event handling for session status, errors, and usage tracking
 - **Files**: `src/index.ts`
 - **Changes**:
   - Expand `event` hook with session.status monitoring
-  - Add session.error handling with LM Studio-specific guidance
+  - Add session.error handling with llama.cpp-specific guidance
   - Implement session.idle tracking for usage analytics
   - Add message.updated tracking for model usage patterns
 - **Acceptance Criteria**:
   - Monitors session health and provides proactive alerts
-  - Catches LM Studio errors and suggests solutions
+  - Catches llama.cpp errors and suggests solutions
   - Tracks which models are most frequently used
   - Provides session usage statistics
 
 #### Task 2.2: Proactive Error Recovery
-- **Goal**: Automatically detect and suggest fixes for common LM Studio issues
+- **Goal**: Automatically detect and suggest fixes for common llama.cpp issues
 - **Description**: Implement proactive error detection and automatic suggestion system
 - **Files**: `src/index.ts`
 - **Changes**:
@@ -95,7 +95,7 @@
   - Add server health monitoring
   - Create troubleshooting suggestion engine
 - **Acceptance Criteria**:
-  - Detects when LM Studio goes offline
+  - Detects when llama.cpp server goes offline
   - Identifies model configuration mismatches
   - Monitors server health endpoints
   - Provides actionable troubleshooting steps
@@ -147,17 +147,17 @@
   - Provides error notifications with actions
   - Respects user notification preferences
 
-## Epic 3: LM Studio Management Tools
+## Epic 3: llama.cpp Management Tools
 
 ### Phase 5: Core Management Tools
 
 #### Task 3.1: Model Loading Tool
 - **Goal**: Allow users to load models directly from OpenCode
-- **Description**: Implement tool to trigger model loading in LM Studio
+- **Description**: Implement tool to trigger model loading in llama.cpp
 - **Files**: `src/index.ts`
 - **Changes**:
-  - Add `lmstudio.load-model` tool definition
-  - Implement LM Studio API calls for model loading
+  - Add `llamacpp.load-model` tool definition
+  - Implement llama.cpp API calls for model loading
   - Add loading progress monitoring
   - Create error handling for loading failures
 - **Acceptance Criteria**:
@@ -171,9 +171,9 @@
 - **Description**: Add tools for listing, unloading, and switching models
 - **Files**: `src/index.ts`
 - **Changes**:
-  - Add `lmstudio.list-models` tool
-  - Add `lmstudio.unload-model` tool  
-  - Add `lmstudio.switch-model` tool
+  - Add `llamacpp.list-models` tool
+  - Add `llamacpp.unload-model` tool
+  - Add `llamacpp.switch-model` tool
   - Implement batch operations
 - **Acceptance Criteria**:
   - Lists all available and loaded models
@@ -182,13 +182,13 @@
   - Supports batch operations
 
 #### Task 3.3: Server Management Tools
-- **Goal**: Allow control over LM Studio server from OpenCode
-- **Description**: Add tools to start, stop, and configure LM Studio server
+- **Goal**: Allow control over llama.cpp server from OpenCode
+- **Description**: Add tools to start, stop, and configure llama.cpp server
 - **Files**: `src/index.ts`
 - **Changes**:
-  - Add `lmstudio.server-start` tool
-  - Add `lmstudio.server-stop` tool
-  - Add `lmstudio.server-status` tool
+  - Add `llamacpp.server-start` tool
+  - Add `llamacpp.server-stop` tool
+  - Add `llamacpp.server-status` tool
   - Implement server configuration management
 - **Acceptance Criteria**:
   - Can detect server status
@@ -203,7 +203,7 @@
 - **Description**: Add search and recommendation capabilities for models
 - **Files**: `src/index.ts`
 - **Changes**:
-  - Add `lmstudio.search-models` tool
+  - Add `llamacpp.search-models` tool
   - Implement model similarity matching
   - Add model recommendation engine
   - Create model comparison features
@@ -233,7 +233,7 @@
 ### Phase 7: Context Enhancement
 
 #### Task 4.1: System Message Integration
-- **Goal**: Inject LM Studio context into system messages
+- **Goal**: Inject llama.cpp context into system messages
 - **Description**: Use `experimental.chat.system.transform` to provide relevant context
 - **Files**: `src/index.ts`
 - **Changes**:
@@ -248,7 +248,7 @@
   - Maintains context relevance
 
 #### Task 4.2: Message Transformation Integration
-- **Goal**: Transform messages for better LM Studio compatibility
+- **Goal**: Transform messages for better llama.cpp compatibility
 - **Description**: Use `experimental.chat.messages.transform` for message optimization
 - **Files**: `src/index.ts`
 - **Changes**:
@@ -266,7 +266,7 @@
 
 #### Task 4.3: Model Compaction Support
 - **Goal**: Enhance session compaction with model-specific context
-- **Description**: Improve `experimental.session.compacting` with LM Studio context
+- **Description**: Improve `experimental.session.compacting` with llama.cpp context
 - **Files**: `src/index.ts`
 - **Changes**:
   - Add compaction context injection
@@ -331,8 +331,8 @@
 ### Phase 10: Enterprise Features
 
 #### Task 5.3: Multi-Instance Support
-- **Goal**: Support multiple LM Studio instances
-- **Description**: Add support for managing multiple LM Studio instances
+- **Goal**: Support multiple llama.cpp instances
+- **Description**: Add support for managing multiple llama.cpp instances
 - **Files**: `src/index.ts`
 - **Changes**:
   - Add multi-instance detection
@@ -340,14 +340,14 @@
   - Add load balancing capabilities
   - Create instance health monitoring
 - **Acceptance Criteria**:
-  - Detects multiple LM Studio instances
+  - Detects multiple llama.cpp instances
   - Switches between instances seamlessly
   - Balances load across instances
   - Monitors all instance health
 
 #### Task 5.4: Team Collaboration Features
 - **Goal**: Enable team collaboration with shared models
-- **Description**: Add features for team-based LM Studio usage
+- **Description**: Add features for team-based llama.cpp usage
 - **Files**: `src/index.ts`
 - **Changes**:
   - Add team model sharing

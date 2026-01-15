@@ -3,15 +3,11 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      version_type:
-        description: 'Version bump type'
+      version:
+        description: 'Version to release (e.g., patch, minor, major, or specific version like 0.4.0)'
         required: true
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
-        default: patch
+        type: string
+        default: 'patch'
 
 jobs:
   release:
@@ -27,29 +23,56 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          bun-version: latest
+          version: latest
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+      
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       
       - name: Install dependencies
-        run: bun install
+        run: pnpm install --frozen-lockfile
       
-      - name: Configure npm for publishing
+      - name: Run tests
+        run: pnpm run test:run
+      
+      - name: Build
+        run: pnpm run typecheck
+      
+      - name: Bump version
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          pnpm version ${{ github.event.inputs.version }} --no-git-tag-version
+          echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
       
-      - name: Run release script
-        run: bun scripts/release.ts ${{ inputs.version_type }}
+      - name: Commit version bump
+        run: |
+          git add package.json
+          git commit -m "chore: bump version to v${{ env.NEW_VERSION }}"
+      
+      - name: Create git tag
+        run: git tag v${{ env.NEW_VERSION }}
+      
+      - name: Push commits and tags
+        run: |
+          git push origin main
+          git push origin v${{ env.NEW_VERSION }}
+      
+      - name: Create GitHub release
+        run: gh release create v${{ env.NEW_VERSION }} --generate-notes --title "v${{ env.NEW_VERSION }}"
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

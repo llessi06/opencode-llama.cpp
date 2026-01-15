@@ -1,11 +1,12 @@
 // Test script to verify the plugin exports correctly
-import { LMStudioPlugin } from "./src/index.ts"
+import { LlamaCppPlugin } from "./src"
+import {PluginInput} from "@opencode-ai/plugin";
 
-console.log("Plugin loaded successfully!")
-console.log("Plugin type:", typeof LMStudioPlugin)
+// Log the imported value
+console.log("Plugin type:", typeof LlamaCppPlugin)
 
-// Test that it's a function
-if (typeof LMStudioPlugin === "function") {
+// Try to call it if it's a function
+if (typeof LlamaCppPlugin === "function") {
   console.log("✓ Plugin is a function")
 } else {
   console.error("✗ Plugin is not a function")
@@ -21,7 +22,7 @@ const mockInput = {
   $: {} as any,
 }
 
-LMStudioPlugin(mockInput)
+LlamaCppPlugin(<PluginInput>mockInput)
   .then((hooks) => {
     console.log("✓ Plugin initializes successfully")
     console.log("Hooks returned:", Object.keys(hooks))

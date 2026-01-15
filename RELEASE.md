@@ -1,15 +1,22 @@
 # Release Process
 
-This project uses an automated release system that handles versioning, testing, git tagging, GitHub releases, and npm publishing.
+This project uses an automated GitHub Actions workflow that handles versioning, testing, git tagging, GitHub releases, and npm publishing.
 
 ## Quick Start
 
-```bash
-npm run release patch   # 0.1.0 -> 0.1.1 (bug fixes)
-npm run release minor   # 0.1.0 -> 0.2.0 (new features)
-npm run release major   # 0.1.0 -> 1.0.0 (breaking changes)
-npm run release 0.2.0   # Set specific version
-```
+Use the GitHub Actions workflow to create releases:
+
+1. Go to: **Actions → Release → Run workflow**
+2. Enter version to release (e.g., `patch`, `minor`, `major`, or specific like `0.4.0`)
+3. Click "Run workflow"
+
+The workflow will automatically:
+- Run tests and build
+- Bump version in package.json
+- Create git tag
+- Push to GitHub
+- Create GitHub release with notes
+- Publish to npm registry
 
 ## What the Release Script Does
 
@@ -25,8 +32,7 @@ npm run release 0.2.0   # Set specific version
 ### Local Releases
 
 1. **npm authentication** (one of these):
-   - `npm login` (with 2FA OTP)
-   - `npm token create --read-only=false` then `npm config set //registry.npmjs.org/:_authToken YOUR_TOKEN`
+   - Create npm token: `npm token create`
    - Set `NPM_TOKEN` environment variable
 
 2. **GitHub CLI** (`gh`) authenticated:
@@ -51,41 +57,38 @@ npm run release 0.2.0   # Set specific version
 
 ## Manual Steps (if needed)
 
-If the automated script fails at any step, you can complete it manually:
+If the automated GitHub Actions workflow fails, you can complete it manually:
 
 ```bash
 # 1. Bump version
-npm version patch  # or minor, major
+pnpm version patch  # or minor, major
 
 # 2. Run tests
-npm run build
+pnpm run build
 
 # 3. Create and push tag
 git tag v0.1.1
+git push origin main
 git push origin v0.1.1
 
 # 4. Create GitHub release
-gh release create v0.1.1 --title "v0.1.1" --notes "Release notes"
+gh release create v0.1.1 --title "v0.1.1" --generate-notes
 
-# 5. Publish to npm
-npm publish
+# 5. Publish to pnpm
+pnpm publish --access public
 ```
 
 ## Troubleshooting
 
-### npm publish fails with 2FA error
+### Publish fails with authentication error
 
-**Solution**: Create an npm token and configure it:
+**Solution**: Create an npm token and use environment variable:
 ```bash
-npm token create --read-only=false
-npm config set //registry.npmjs.org/:_authToken YOUR_TOKEN
-```
-
-Or use environment variable:
-```bash
+npm token create
 export NPM_TOKEN=your_token_here
-npm run release patch
 ```
+
+Then trigger the GitHub Actions workflow to release.
 
 ### GitHub release creation fails
 
@@ -96,10 +99,7 @@ gh auth login
 
 ### Version already exists
 
-**Solution**: The script will detect this and skip npm publish. Just bump to the next version:
-```bash
-npm run release patch  # Will create 0.1.2 if 0.1.1 exists
-```
+**Solution**: Just bump to the next version in the GitHub Actions workflow input.
 
 ## CI/CD Integration
 

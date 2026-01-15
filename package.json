@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "opencode-lmstudio",
-  "version": "0.3.0",
-  "description": "OpenCode plugin for enhanced LM Studio support with auto-detection and dynamic model discovery",
+  "name": "opencode-plugin-llama.cpp",
+  "version": "0.1.0",
+  "description": "OpenCode plugin for enhanced llama.cpp support with auto-detection and dynamic model discovery",
   "type": "module",
   "main": "./src/index.ts",
   "exports": {
@@ -19,16 +19,14 @@
     "test:watch": "vitest watch",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "build": "npm run typecheck && npm run test:run",
-    "validate": "npm run lint && npm run typecheck && npm run test:run",
-    "validate:config": "bun scripts/validate-config.ts",
-    "release": "bun scripts/release.ts",
-    "prepublishOnly": "npm run build"
+    "build": "pnpm run typecheck && pnpm run test:run",
+    "validate": "pnpm run lint && pnpm run typecheck && pnpm run test:run",
+    "validate:config": "node scripts/validate-config.ts",
+    "prepublishOnly": "pnpm run build"
   },
   "keywords": [
     "opencode",
-    "lmstudio",
-    "lm-studio",
+    "llama-cpp",
     "plugin",
     "local-llm",
     "openai-compatible"
@@ -37,16 +35,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/agustif/opencode-lmstudio.git"
+    "url": "git+https://github.com/llessi06/opencode-llama.cpp.git"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^1.0.166"
+    "@opencode-ai/plugin": "^1.1.21"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3",
-    "@vitest/coverage-v8": "^4.0.16",
+    "@types/node": "^25.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "@vitest/coverage-v8": "^4.0.17",
     "eslint": "^9.39.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "typescript-eslint": "^8.53.0",
+    "vitest": "^4.0.17"
   }
 }

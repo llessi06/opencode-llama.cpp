@@ -1,1 +1,1 @@
-export { LMStudioPlugin } from './plugin'
+export {LlamaCppPlugin} from './plugin'
