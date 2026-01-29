@@ -17,7 +17,7 @@ OpenCode plugin for enhanced llama.cpp support with auto-detection and dynamic m
 ## Installation
 
 ```bash
-pnpm add opencode-llama-cpp@latest
+pnpm add opencode-llama.cpp@latest
 ```
 
 ## Usage
