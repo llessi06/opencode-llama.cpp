@@ -89,12 +89,11 @@ export async function enhanceConfig(
                     }
 
                     // Add additional metadata based on model type
+                    // Skip embedding models - they are not usable for chat and their
+                    // modalities (output: ["embedding"]) are not valid in opencode's config schema
                     if (modelType === 'embedding') {
                         embeddingModelsCount++
-                        modelConfig.modalities = {
-                            input: ["text"],
-                            output: ["embedding"]
-                        }
+                        continue
                     } else if (modelType === 'chat') {
                         chatModelsCount++
                         modelConfig.modalities = {
